@@ -189,6 +189,7 @@
           url: "https://api.wossidia.de/isebelindex",
           type: "get", 
           crossDomain: true,
+          dataType: 'jsonp',
           data: { 
             word: "moort",
           },
@@ -198,7 +199,7 @@
           },
           error: function(xhr) {
             console.log(xhr)
-          }
+          },
         });
       }
     </script>
