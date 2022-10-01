@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/mat-lit/api#readme",
   "dependencies": {
-    "express": "^4.18.1"
+    "express": "^4.18.1",
+    "ffmpeg": "^0.0.4"
   }
 }

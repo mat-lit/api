@@ -9,8 +9,9 @@ app.get('/', (req, res) => {
   res.sendFile('public/index.html', { root: '.' })
 })
 
-app.get('/api', (req, res) => {
-  res.send('nice one!')
+app.post('/test', (req, res, err) => {
+  console.log(req.body)
+  res.json('Successful post')
 })
 
 app.listen(port, () => {
