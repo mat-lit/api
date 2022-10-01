@@ -9,6 +9,7 @@ app.get('/', (req, res) => {
   res.sendFile('public/index.html', { root: '.' })
 })
 
+
 app.post('/test', (req, res, err) => {
   console.log(req.body)
   res.json('Successful post')
