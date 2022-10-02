@@ -173,12 +173,13 @@
 
         if (searchTerm != "") {
           $.ajax({
-            url: "http://api.wossidia.de/isebel/index/",
+            url: "https://digibibapp14.uni-rostock.de/wopqueries/isebel/index/" + searchTerm,
             type: "get",
+            /*
             data: {
               word: searchTerm,
-              limit: 1,
             },
+            */
             dataType: "json",
             success: function (response) {
               console.log(response);
