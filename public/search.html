@@ -58,9 +58,7 @@
         <div class="w3-col l12 s12">
           <div class="w3-container w3-card-4 w3-margin w3-white">
             <div class="w3-container">
-                <div>
-                    
-                </div>
+              <div></div>
               <p>
                 <label for="search">Suche </label>
                 <input
@@ -163,6 +161,8 @@
           </div>
         </div>
       </div>
+
+      <div class="w3-row w3-container w3-card-4 w3-margin w3-white" id="preview">//</div>
     </div>
 
     <!-- Script für ausklappbare Box "Tonaufnahme" -->
@@ -173,16 +173,41 @@
 
         if (searchTerm != "") {
           $.ajax({
-            url: "https://digibibapp14.uni-rostock.de/wopqueries/isebel/index/" + searchTerm,
+            url:
+              "https://digibibapp14.uni-rostock.de/wopqueries/isebel/index/" +
+              searchTerm,
             type: "get",
-            /*
             data: {
-              word: searchTerm,
+              data: true,
             },
-            */
             dataType: "json",
             success: function (response) {
-              console.log(response);
+              let preview = document.getElementById("preview");
+
+              //div anlegen und mit informationen füllen!!
+              //<h3> title+place
+              //<p> text
+              //console.log(json);
+              for (var key in response) {
+                let div = document.createElement("div");
+                let h3 = document.createElement("h3");
+                let p = document.createElement("p");
+                let a = document.createElement("a")
+
+                const result = response[key];
+                a.innerHTML = result.title;
+                a.href = "https://www.wossidia.de/wossibel2go/"
+                h3.appendChild(a);
+
+                p.innerHTML = result.text.substring(1, 100);
+
+                div.appendChild(h3);
+                div.appendChild(p);
+
+                preview.appendChild(div)
+
+
+              }
             },
             error: function (xhr) {
               console.log(xhr);
