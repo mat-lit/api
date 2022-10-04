@@ -56,18 +56,24 @@
           <!-- Blog entry -->
           <div class="w3-card-4 w3-margin w3-white">
             <div class="w3-container">
-              <h3><b>Hexen reiten in der Johannisnacht auf Siebrand</b></h3>
+              <h3><b id="title"></b></h3>
               <h5>
-                Herr Wittfoot (Kahlenberg) Heiligen Damm,
-                <span class="w3-opacity">03.09.1925</span>
+                <a id="place"></a>
+                <span class="w3-opacity" id="date"></span>
               </h5>
             </div>
 
             <div class="w3-container">
-              <p>
-                Johannignacht hebben dee räden, dee mit sabenrand, hexen künnt
-              </p>
-              <img src="https://doro.uni-rostock.de/depot/wossidia/zaw02706008/images/phys_0003.jpg" width="500" height="600"/>
+              <p id="story"></p>
+              <img
+                src=""
+                class="w3-round w3-image w3-margin-bottom"
+                style="
+                  width: 100%;
+                  max-width: 600px;
+                "
+                id="card"
+              />
             </div>
             <button type="button" class="collapsible">Tonaufnahme</button>
             <div w3-col m8 s12 class="content">
@@ -94,14 +100,18 @@
                   <b>Aufnahme beenden</b>
                 </button>
               </p>
-              <p>
-                <form method="POST">
-                  <audio controls controlslist="nodownload" id="audio"></audio>
-                </form>
-              </p>
+              <p></p>
+              <form method="POST">
+                <audio controls controlslist="nodownload" id="audio"></audio>
+              </form>
               <p>
                 <!-- Nach Senden der Aufnahme sollte der Nutzer eine Bestätigung bekommen z.B. alert("Vielen Dank für ihren Beitrag")-->
-                <button id="submit" disabled="true" value="audio" onclick="ajax()">
+                <button
+                  id="submit"
+                  disabled="true"
+                  value="audio"
+                  onclick="ajax()"
+                >
                   Aufnahme senden
                 </button>
               </p>
@@ -119,13 +129,100 @@
       <!-- END w3-content -->
     </div>
 
+    <!-- Skript für Einlesen der Daten aus ISEBEL -->
+    <script>
+      getStory();
+
+      function getStory() {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+
+        if (params.storyid != "") {
+          $.ajax({
+            url:
+              "https://digibibapp14.uni-rostock.de/wopqueries/isebel/story/" +
+              params.storyid,
+            type: "get",
+            dataType: "xml",
+            success: function (response) {
+              //console.log(response);
+              let data = readStoryXML(response);
+              displayStory(data);
+            },
+            error: function (xhr) {
+              console.log(xhr);
+            },
+          });
+        }
+      }
+
+      function readStoryXML(xml) {
+        let data = new Object();
+
+        let story = xml.getElementsByTagName("isebel:story");
+
+        let contents = story[0].getElementsByTagName("isebel:contents");
+        let content = contents[0].getElementsByTagName("isebel:content");
+        let text = content[0].innerHTML;
+        data.story = text;
+
+        let title = story[0].getElementsByTagName("dc:title");
+        title = title[0].innerHTML;
+        data.title = title;
+
+        let places = story[0].getElementsByTagName("isebel:places");
+        let place = places[0].getElementsByTagName("isebel:place");
+        let placeTitle = place[0].getElementsByTagName("dc:title");
+        placeTitle = placeTitle[0].innerHTML;
+        data.place = placeTitle;
+
+        let images = [];
+        let imgResources = story[0].getElementsByTagName(
+          "isebel:imageResources"
+        );
+        imgResources = imgResources[0].getElementsByTagName(
+          "isebel:imageResource"
+        );
+
+        for (let i = 0; i < imgResources.length; i++) {
+          images.push(
+            imgResources[i].getElementsByTagName("isebel:purl")[0].innerHTML
+          );
+        }
+        data.images = images;
+
+        //events sind nicht in jeder Story vorhanden
+        let events = story[0].getElementsByTagName("isebel:events");
+        if (events[0] != null) {
+          let event = events[0].getElementsByTagName("isebel:event");
+          let date = event[0].getElementsByTagName("isebel:date");
+          date = date[0].innerHTML;
+          data.date = date;
+        }
+
+        return data;
+      }
+
+      function displayStory(data) {
+        console.log(data);
+        document.getElementById("story").innerHTML = data.story;
+        document.getElementById("title").innerHTML = data.title;
+        document.getElementById("place").innerHTML = data.place;
+        document.getElementById("card").src = data.images[0];
+        console.log(data.images[0])
+        if (data.date != undefined) {
+          document.getElementById("date").innerHTML = data.date;
+        }
+      }
+    </script>
+
     <!-- Aufnahmefunktion -->
     <script>
       function startRecording() {
-        //TODO: Zugriff auf das Mikrofon muss nur einmalig gewährt werden. Aktuell wird die entsprechende 
+        //TODO: Zugriff auf das Mikrofon muss nur einmalig gewährt werden. Aktuell wird die entsprechende
         //Funktion navigator.mediaDevices.getUserMedia() jedoch bei JEDER neuen Aufnahme aufgerufen, was zu einer Fehlermeldung führt.
-        //entsprechende Überprüfung einbauen, die dies verhindert.  
-    
+        //entsprechende Überprüfung einbauen, die dies verhindert.
+
         toggleRecord();
         const stopButton = document.getElementById("stopRecord");
 
@@ -149,7 +246,7 @@
             reader.readAsDataURL(blob);
             reader.onloadend = function () {
               var base64data = reader.result;
-              console.log(base64data)
+              //console.log(base64data);
             };
           });
 
@@ -167,8 +264,8 @@
 
       function stopRecording() {
         toggleRecord();
-        const submit = document.getElementById("submit")
-        submit.disabled = false
+        const submit = document.getElementById("submit");
+        submit.disabled = false;
       }
 
       //Wechselt Button zwischen "Aufnahme starten" und "Aufnahme beenden"
@@ -188,22 +285,22 @@
       function ajax() {
         $.ajax({
           url: "https://api.wossidia.de/isebelindex",
-          type: "get", 
-          data: { 
+          type: "get",
+          data: {
             word: "moort",
           },
-          success: function(response) {
-            console.log(response)
+          success: function (response) {
+            console.log(response);
           },
-          error: function(xhr) {
-            console.log(xhr)
+          error: function (xhr) {
+            console.log(xhr);
           },
         });
       }
     </script>
 
     <!-- Script für ausklappbare Box "Tonaufnahme" -->
-    <script>  
+    <script>
       var coll = document.getElementsByClassName("collapsible");
       var i;
 
