@@ -68,10 +68,7 @@
               <img
                 src=""
                 class="w3-round w3-image w3-margin-bottom"
-                style="
-                  width: 100%;
-                  max-width: 600px;
-                "
+                style="width: 100%; max-width: 600px"
                 id="card"
               />
             </div>
@@ -170,11 +167,14 @@
         title = title[0].innerHTML;
         data.title = title;
 
+        //Orte sind nicht in jeder Story verfügbar
         let places = story[0].getElementsByTagName("isebel:places");
-        let place = places[0].getElementsByTagName("isebel:place");
-        let placeTitle = place[0].getElementsByTagName("dc:title");
-        placeTitle = placeTitle[0].innerHTML;
-        data.place = placeTitle;
+        if (places[0] != null) {
+          let place = places[0].getElementsByTagName("isebel:place");
+          let placeTitle = place[0].getElementsByTagName("dc:title");
+          placeTitle = placeTitle[0].innerHTML;
+          data.place = placeTitle;
+        }
 
         let images = [];
         let imgResources = story[0].getElementsByTagName(
@@ -207,9 +207,11 @@
         console.log(data);
         document.getElementById("story").innerHTML = data.story;
         document.getElementById("title").innerHTML = data.title;
-        document.getElementById("place").innerHTML = data.place;
+        if (data.place != undefined) {
+          document.getElementById("place").innerHTML = data.place;
+        }
         document.getElementById("card").src = data.images[0];
-        console.log(data.images[0])
+        console.log(data.images[0]);
         if (data.date != undefined) {
           document.getElementById("date").innerHTML = data.date;
         }
