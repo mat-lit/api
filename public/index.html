@@ -182,10 +182,9 @@
           "isebel:imageResources"
         );
         if (imgResources[0] != null) {
-          if (img)
-            imgResources = imgResources[0].getElementsByTagName(
-              "isebel:imageResource"
-            );
+          imgResources = imgResources[0].getElementsByTagName(
+            "isebel:imageResource"
+          );
 
           for (let i = 0; i < imgResources.length; i++) {
             images.push(
