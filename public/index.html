@@ -69,7 +69,7 @@
               <p id="story"></p>
             </div>
 
-            <button type="button" class="collapsible">Archivmaterial</button>
+            <button type="button" class="collapsible" style="display: none" id="archiv">Archivmaterial</button>
             <div class="content">
               <div id="cards"></div>
             </div>
@@ -216,6 +216,7 @@
         }
 
         if (data.images != undefined) {
+          document.getElementById("archiv").style.display = "block"
           for (image in data.images) {
             let div = document.createElement("div");
             div.classList.add("gallery");
